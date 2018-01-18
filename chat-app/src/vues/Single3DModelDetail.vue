@@ -2,30 +2,29 @@
   <div>
     <nav class="navbar navbar-light" style="background-color: #e3f2fd;">
       <div class="container-fluid">
-        <div class="navbar-header">
-          <a class="navbar-brand" href="#">Confluence Marco Extension</a>
-        </div>
+        <!--<div class="navbar-header">-->
+        <!--<a class="navbar-brand" href="#">Confluence Marco Extension</a>-->
+        <!--</div>-->
         <ul class="nav navbar-nav">
           <li class="nav-item"><router-link :to="{path: '/3dmodels'}"><span class="fa fa-cube fa-lg" aria-hidden="true"></span> 3D</router-link></li>
-          <li class="nav-item"><router-link :to="{path: '/videos'}"><span class="fa fa-video-camera fa-lg" aria-hidden="true"></span> Video</router-link></li>
+          <!--<li class="nav-item"><router-link :to="{path: '/videos'}"><span class="fa fa-video-camera fa-lg" aria-hidden="true"></span> Video</router-link></li>-->
         </ul>
       </div>
     </nav>
 
     <div class="row">
       <div class="col-sm-8" style="padding-left: 45px;">
-        <h2>{{model.name}}</h2>
-        <h5>Upload Date: {{new Date(model.creationDate).toLocaleDateString()}}</h5>
+        <h2 class="col-sm-12">{{model.name}}</h2>
+        <h5 class="col-sm-5">Upload Date: {{new Date(model.creationDate).toLocaleDateString()}}</h5>
         <iframe :src="'http://localhost:8080/3dmodels/detail/'+my_id+'/model'" height="580" width="710" frameBorder="0"></iframe>
-
       </div>
-  <div class="col-sm-1 pull-right" style="margin-right: 50px;margin-top:20px;">
-      <a data-toggle="modal" data-target="#deleteModal">
-        <div >
-          <button type="button" class="btn btn-danger btn-md">Delete</button>
-        </div>
-      </a>
-
+  <div class="col-sm-1 pull-right" style="margin-right: 50px;margin-top:70px;">
+      <!--<a data-toggle="modal" data-target="#deleteModal">-->
+        <!--<div >-->
+          <!--<button type="button" class="btn btn-danger btn-md">Delete</button>-->
+        <!--</div>-->
+      <!--</a>-->
+    <div class="label label-warning" style="font-size: small; font-family: 'Times New Roman';"><router-link :to="{path: '/3dmodels/detail/'+model.name+'/version'}"><i class="fa fa-code-fork"></i> · v{{model.version}}</router-link></div>
     </div>
     </div>
     <div class="row">
@@ -43,20 +42,17 @@
     </div>
   <div style="padding-left: 15px; padding-top: 10px;padding-right: 15px;">
     <div class="panel panel-default" >
-      <div class="panel-heading">3D Model Arguments Setting</div>
+      <div class="panel-heading">Parameter Setting</div>
       <div class="panel-body">
         <form>
           <div class="row">
           <div class="form-group col-sm-6">
             <label for="height" class="label-sm" style="font-size: 12px">Height: <span v-if="height!=''">{{parseInt(height)}}</span></label>
             <input type="text" class="form-control input-sm" id="height" placeholder="100~1000" v-model="height">
-            <!--<label style="color:red" v-if="!height_check">Invalid Number</label>-->
           </div>
           <div class="form-group col-sm-6">
-
             <label for="width" class="label-sm" style="font-size: 12px">Width: <span v-if="height!=''">{{parseInt(width)}}</span></label>
             <input type="text" class="form-control input-sm" id="width" placeholder="100~1000" v-model="width">
-            <!--<label style="color:red" v-if="!width_check">Invalid Number</label>-->
           </div>
           </div>
           <div class="form-group">
@@ -79,19 +75,7 @@
       </div>
     </div>
   </div>
-    <div id="deleteModal" class="modal fade" role="dialog">
-        <div class="modal-dialog modal-sm" role="content">
-          <div class="modal-content">
-            <div class="modal-body">
-              <h4>Are you sure to delete {{model.name}}?</h4>
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">Cancel</button>
-              <button type="button" class="btn btn-danger btn-sm" @click="delete_model" data-dismiss="modal">Delete</button>
-            </div>
-          </div>
-        </div>
-    </div>
+
     <div id="tagModal" class="modal fade" role="dialog">
       <div class="modal-dialog modal-lg" role="content">
         <div class="modal-content">
@@ -198,11 +182,7 @@
           document.getElementById('auto_display').checked = false;
           $('#useModal').modal('hide');
       },
-      delete_model() {
-        this.$http.delete('http://localhost:4941/confluence_api/v1/3dmodels/'+this.my_id).then(function (res) {
-          this.$router.push({path: '/3dmodels/'});
-        });
-      },
+
       add_tag() {
         let tag = this.tag_input;
         if(tag==''){
@@ -238,9 +218,11 @@
       },
       get_all_tag_names(){
         this.$http.get('http://localhost:4941/confluence_api/v1/3dmodels/tags/tag_name/all').then(function (result) {
+          console.log(result);
           for(let tagname of result.body){
             this.all_tag_names.push(tagname);
           }
+          console.log("show: "+this.all_tag_names);
         });
       },
       click_tag(tag){

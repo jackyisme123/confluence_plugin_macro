@@ -17,9 +17,15 @@
     <script src="/dist/build.js"></script>
     <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/marmoset.js"></script>
     <script src="/node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
     <script src="/node_modules/vue-instant/dist/vue-instant.browser.js"></script>
-    <script src="/marmoset.js"></script>
     <!--<script src="http://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>-->
+  <script>
+
+    $('#versionModal').on('hidden.bs.modal', function () {
+      document.getElementById("upload_file").value = null;
+    });
+  </script>
   </body>
 </html>

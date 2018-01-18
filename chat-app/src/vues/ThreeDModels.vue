@@ -1,13 +1,33 @@
 <template>
 <div>
+  <div id="versionModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg" role="content">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 style="font-weight: bolder; font-family: 'Times New Roman'; color: #ffcc00">WARNING:</h2>
+        </div>
+        <div class="modal-body">
+          <h4 v-if="my_upload_file">  <span style="font-family: 'Times New Roman'; font-weight: bold; color: dodgerblue; font-size: x-large">{{my_upload_file.name}}</span> has already been existed. </h4>
+          <h4>  If you'd like to create a new version,</h4>
+          <h4>  please write down some comments and click confirm.</h4>
+          <h4>  Otherwise, click cancel to quit.</h4>
+          <input type="text" class="form-control input-lg" id="version_comment" placeholder="Your Comment" v-model="version_comment">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default btn-lg" data-dismiss="modal" @click="close_version_modal">Cancel</button>
+          <button type="button" class="btn btn-success btn-lg" @click="create_new_version" data-dismiss="modal">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
   <nav class="navbar navbar-light" style="background-color: #e3f2fd;">
     <div class="container-fluid">
-      <div class="navbar-header">
-        <a class="navbar-brand" href="#">Confluence Marco Extension</a>
-      </div>
+      <!--<div class="navbar-header">-->
+      <!--<a class="navbar-brand" href="#">Confluence Marco Extension</a>-->
+      <!--</div>-->
       <ul class="nav navbar-nav">
         <li class="nav-item"><router-link :to="{path: '/3dmodels'}"><span class="fa fa-cube fa-lg" aria-hidden="true"></span> 3D</router-link></li>
-        <li class="nav-item"><router-link :to="{path: '/videos'}"><span class="fa fa-video-camera fa-lg" aria-hidden="true"></span> Video</router-link></li>
+        <!--<li class="nav-item"><router-link :to="{path: '/videos'}"><span class="fa fa-video-camera fa-lg" aria-hidden="true"></span> Video</router-link></li>-->
       </ul>
     </div>
   </nav>
@@ -50,7 +70,9 @@
     </ul>
   </div>
   </div>
+
 </div>
+
 </template>
 
 
@@ -58,7 +80,7 @@
   export default {
     data() {
       return {
-        all_models: null,
+        all_models: [],
         all_file_names: [],
         search_models: [],
         err_msg: '',
@@ -66,7 +88,9 @@
         per_page:6,
         total_num:0,
         current_models: [],
-        all_tag_names: []
+        all_tag_names: [],
+        version_comment: '',
+        my_upload_file: null,
       }
     },
     mounted: function () {
@@ -77,20 +101,20 @@
       handleFileChange(e){
         const self = this;
         this.err_msg = '';
-        let upload_file = document.getElementById("upload_file").files[0];
+        this.my_upload_file = document.getElementById("upload_file").files[0];
+        let upload_file = this.my_upload_file;
         if (upload_file.name.toLowerCase().indexOf(".mview")==-1){
           this.err_msg = "Error: invalid file type";
           return;
         }
         for (let model of this.all_models){
           if(model.name == upload_file.name){
-            this.err_msg = "Error: already existed";
+            $('#versionModal').modal('show');
             return;
           }
         }
         let formData = new FormData();
         formData.append("upload_file", upload_file, upload_file.name);
-        let thumbnail_name = upload_file.name.substring(0, upload_file.name.lastIndexOf(".")) + ".jpg";
         this.$http.post('http://localhost:4941/confluence_api/v1/3dmodels/', formData,
           {
             headers:
@@ -101,9 +125,9 @@
         ).then(function (result) {
           if (result.status = 200) {
             let url = result.body.url;
-            var id = result.body.id.toString();
-            var myLoadFunc = function (blob) {
-              let formData= new FormData();
+            let id = result.body.id.toString();
+            let myLoadFunc = function (blob) {
+              formData= new FormData();
               formData.append("thumbnail", blob, id+".jpg");
               self.$http.post('http://localhost:4941/confluence_api/v1/3dmodels/update_thumbnail', formData,
                 {
@@ -122,6 +146,39 @@
 
       },
 
+    create_new_version(){
+      const self = this;
+      let formData = new FormData();
+      formData.append("version_comment", this.version_comment);
+      formData.append("upload_file", this.my_upload_file, this.my_upload_file.name);
+      this.$http.post('http://localhost:4941/confluence_api/v1/3dmodels/versions', formData,
+        {
+          headers:
+            {
+              'Content-Type': 'multipart/form-data'
+            }
+      }).then(function (result1) {
+        if(result1.status = 200){
+          let url = result1.body.url;
+          let id = result1.body.id.toString();
+          let myLoadFunc = function (blob) {
+            formData= new FormData();
+            formData.append("thumbnail", blob, id+".jpg");
+            self.$http.post('http://localhost:4941/confluence_api/v1/3dmodels/update_thumbnail', formData,
+              {
+                headers:
+                  {
+                    'Content-Type': 'multipart/form-data'
+                  }
+              }
+            ).then(function (result2) {
+              this.$router.push({path: '/3dmodels/detail/'+id});
+            });
+          };
+          marmoset.fetchThumbnail('http://localhost:4941/confluence_api/v1/3dmodels/'+url, myLoadFunc);
+        }
+      });
+    },
       get_all_3d_models(){
         this.err_msg = '';
         let search_value = this.$route.query['search_name'];
@@ -132,7 +189,7 @@
           this.all_models = res.body;
           if(search_value!=undefined){
             for(let model of this.all_models){
-              if(model.name.toLowerCase().indexOf(search_value.toLowerCase())!=-1||model.tagLabel.toLowerCase().indexOf(search_value.toLowerCase())!=-1){
+              if(model.name.toLowerCase().indexOf(search_value.toLowerCase())!=-1||(model.tagLabel&&model.tagLabel.toLowerCase().indexOf(search_value.toLowerCase())!=-1)){
                   temp.push(model);
               }
             }
@@ -206,18 +263,21 @@
           }
         });
       },
-      search_model_by_tag(name){
-        this.$http.get('http://localhost:4941/confluence_api/v1/3dmodels/tag_name/'+name).then(function (res) {
-          let model_ids = res.body;
-          let result = [];
-          for(let id of model_ids){
-            result.push(id.modelId);
-          }
-          return result;
-        });
+
+
+//      search_model_by_tag(name){
+//        this.$http.get('http://localhost:4941/confluence_api/v1/3dmodels/tag_name/'+name).then(function (res) {
+//          let model_ids = res.body;
+//          let result = [];
+//          for(let id of model_ids){
+//            result.push(id.modelId);
+//          }
+//          return result;
+//        });
+//      },
+      close_version_modal(){
+              this.version_comment = '';
       },
-
-
 
     }
   }

@@ -22,4 +22,11 @@ module.exports = function (app) {
     app.route('/confluence_api/v1/3dmodels/tags/:id/tag/:tag_name').delete(user.delete_tag);
     app.route('/confluence_api/v1/3dmodels/tag_name/:tag_name').get(user.get_by_tagname);
     app.route('/confluence_api/v1/3dmodels/tags/tag_name/all').get(user.get_all_tag_names);
+    app.route('/confluence_api/v1/3dmodels/versions').post(user.add_new_version);
+    app.route('/confluence_api/v1/3dmodels/versions/:name').get(user.get_all_version_by_name);
+    app.route('/confluence_api/v1/3dmodels/versions').put(user.update_current_version);
+    app.route('/confluence_api/v1/3dmodels/versions/:id/name/:name').delete(user.delete_version);
+    app.route('/confluence_api/v1/3dmodels/versions/comment/:id').put(user.update_version_comment);
+
+
 };

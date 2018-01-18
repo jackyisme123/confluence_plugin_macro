@@ -8,6 +8,7 @@ import ThreeDModels from './vues/ThreeDModels.vue';
 import Single3DModelDetail from './vues/Single3DModelDetail.vue';
 import Single3DModel from './vues/Single3DModel.vue';
 import Thumbnail from './vues/Thumbnail.vue';
+import Version from './vues/Version.vue';
 
 Vue.use(VueRouter);
 Vue.use(VueInstant);
@@ -30,6 +31,10 @@ const routes = [
   {
     path: "/3dmodels/detail/:id/thumbnail",
     component: Thumbnail
+  },
+  {
+    path: "/3dmodels/detail/:name/version",
+    component: Version
   }
 
 ];

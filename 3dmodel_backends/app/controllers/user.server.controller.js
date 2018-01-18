@@ -7,13 +7,15 @@ exports.create_single_3dmodel = function (req, res) {
     let fileURL = '';
     let form = new formidable.IncomingForm();
     let file_name = '';
+    let version_name = '';
     let temp_path='';
     form.parse(req);
     form.on('end',function (fields, files) {
         /* Temporary location of our uploaded file */
         file_name = this.openedFiles[0].name;
-        fileURL = './uploads/' + file_name;
         if (file_name.toLowerCase().indexOf(".mview")!=-1) {
+            version_name = file_name.substring(0, file_name.lastIndexOf(".mview"))+"_v1.mview";
+            fileURL = './uploads/' + version_name;
             temp_path = this.openedFiles[0].path;
             /* The file name of the uploaded file */
             /* Location where we want to copy the uploaded file */
@@ -32,6 +34,33 @@ exports.create_single_3dmodel = function (req, res) {
 
                 }
             });
+        }
+    });
+};
+
+exports.add_new_version = function (req, res) {
+    let file_name = '';
+    let version_comment= '';
+    let form = new formidable.IncomingForm();
+    form.parse(req);
+    form.on('field', function(name, value) {
+        version_comment = value;
+    });
+    form.on('end', function (fields, files) {
+        if(this.openedFiles) {
+            file_name = this.openedFiles[0].name;
+            if (file_name.toLowerCase().indexOf(".mview") != -1) {
+                let temp_path = this.openedFiles[0].path;
+                user.add_version(file_name, temp_path, version_comment, function (err, result) {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        res.status(200).json(result);
+                    }
+                });
+            }
+        }else{
+            res.status(404).json("cannot find uploading file!");
         }
     });
 };
@@ -66,7 +95,7 @@ exports.update_thumbnail = function (req, res) {
 
 
 exports.get_all_3dmodels = function (req, res) {
-    user.get_all(function (err, result) {
+    user.get_all_current_version(function (err, result) {
        if(err){
            console.log(err);
        }else{
@@ -85,24 +114,6 @@ exports.get_3dmodel_detail = function (req, res) {
         }
     });
 };
-
-// exports.update_3dmodel = function (req, res) {
-//     let id = req.params.id;
-//     let description = req.body.description;
-//     let thumbnail = req.body.thumbnail;
-//     user.update_single_3dmodel(id, thumbnail, description, function (err, result) {
-//        if(err){
-//            if (err.errno == '1062'){
-//                console.log('name has been existed');
-//            } else {
-//                console.log(err);
-//            }
-//
-//        } else {
-//            res.status(200).send(result);
-//        }
-//     });
-// };
 
 exports.delete_3dmodel = function (req, res) {
     let id = req.params.id;
@@ -126,17 +137,6 @@ exports.get_file = function (req, res) {
     });
 };
 
-// exports.auto_display =function (req, res) {
-//     let auto_display = req.params.bool;
-//     let id = req.params.id;
-//     user.update_display(id, auto_display, function (err, result) {
-//         if(err){
-//             console.log(err);
-//         }else{
-//             res.status(200).send('success');
-//         }
-//     })
-// };
 
 exports.get_all_tags_by_id = function (req, res) {
     let id = req.params.id;
@@ -144,17 +144,6 @@ exports.get_all_tags_by_id = function (req, res) {
         if(err){
             console.log(err);
         }else{
-            // let tags = [];
-            // console.log(result);
-            // if(result[0]!=undefined&&result[0].tagLabel!=null){
-            //     let temps = result[0].tagLabel.split(',');
-            //     for (let tag of temps) {
-            //         if (tag != ''&&tag != 'null'){
-            //             tags.push(tag);
-            //         }
-            //     }
-            // }
-            // console.log(tags);
             res.status(200).json(result);
         }
     });
@@ -207,8 +196,8 @@ exports.get_all_tag_names = function (req, res) {
                    if(temp.tagLabel!=null){
                    let temp1s = temp.tagLabel.split(',');
                    for (let temp1 of temp1s){
-                       if(temp1!=''&&temp1!=null&&tags.indexOf(temp1)!==-1){
-                           tags.push(tags);
+                       if(temp1&&tags.indexOf(temp1)==-1){
+                           tags.push(temp1);
                        }
                    }
                    }
@@ -218,3 +207,78 @@ exports.get_all_tag_names = function (req, res) {
        }
     });
 };
+
+exports.get_all_version_by_name = function (req, res) {
+    let file_name = req.params.name;
+    user.get_all_versions(file_name, function (err, result) {
+        if(err){
+            console.log(err);
+        }else{
+            res.status(200).json(result);
+        }
+    });
+};
+
+exports.update_current_version = function (req, res) {
+    let old_version_id = req.body.old_version_id;
+    let new_version_id = req.body.new_version_id;
+    user.update_version(0, old_version_id, function (err1, result1) {
+        if(err1){
+            console.log(err1);
+        }else{
+            user.update_version(1, new_version_id, function (err2, result2) {
+                if(err2){
+                    console.log(err2);
+                }else{
+                    res.status(200).json("success");
+                }
+            });
+        }
+    });
+};
+
+exports.delete_version = function (req, res) {
+    let delete_id = req.params.id;
+    let name = req.params.name;
+    console.log("delete_id: "+delete_id);
+    user.remove_version_by_id(delete_id, function (err1, result1) {
+        if(err1){
+            console.log(err1);
+        }else{
+            if(name == "zero"){
+                res.status(200).send("success");
+            }else {
+                user.get_latest_version(name, function (err2, result2) {
+                    if(err2){
+                        console.log(err2);
+                    }else{
+                        let new_version = result2[0];
+                        console.log("new version id: "+new_version.id);
+                        user.update_version(true, new_version.id, function (err3, result3) {
+                            if(err3){
+                                console.log(err3);
+                            }else{
+                                res.status(200).send("success");
+                            }
+                        });
+                    }
+                });
+            }
+
+        }
+    });
+
+};
+
+exports.update_version_comment = function (req, res) {
+    let id = req.params.id;
+    let new_comment = req.body.comment;
+    user.change_version_comment(id, new_comment, function (err, result) {
+        if(err){
+            console.log(err);
+        }else{
+            res.status(200).send("success");
+        }
+    });
+};
+

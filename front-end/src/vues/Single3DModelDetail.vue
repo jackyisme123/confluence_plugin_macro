@@ -16,7 +16,7 @@
       <div class="col-sm-8" style="padding-left: 45px;">
         <h2 class="col-sm-12">{{model.name}}</h2>
         <h5 class="col-sm-5">Upload Date: {{new Date(model.creationDate).toLocaleDateString()}}</h5>
-        <iframe :src="'http://localhost:8080/3dmodels/detail/'+my_id+'/model'" height="580" width="710" frameBorder="0"></iframe>
+        <iframe :src="'/3dmodels/detail/'+my_id+'/model'" height="580" width="710" frameBorder="0"></iframe>
       </div>
   <div class="col-sm-1 pull-right" style="margin-right: 50px;margin-top:70px;">
       <!--<a data-toggle="modal" data-target="#deleteModal">-->
@@ -140,12 +140,12 @@
     },
     methods: {
       get_model_detail(){
-        this.$http.get('http://localhost:4941/confluence_api/v1/3dmodels/'+this.my_id).then(function (res) {
+        this.$http.get(process_env.server_url+'/confluence_api/v1/3dmodels/'+this.my_id).then(function (res) {
           this.model = res.body[0];
         });
       },
       get_all_tags(){
-        this.$http.get('http://localhost:4941/confluence_api/v1/3dmodels/tags/'+this.my_id).then(function (res1) {
+        this.$http.get(process_env.server_url+'/confluence_api/v1/3dmodels/tags/'+this.my_id).then(function (res1) {
           for (let tag of res1.body){
             if(tag.tagLabel){
                 let tags = tag.tagLabel.split(',');
@@ -161,7 +161,7 @@
       choose_model() {
         this.height_check=true;
         this.width_check=true;
-        let pass_url = 'http://localhost:4941/confluence_api/v1/3dmodels/'+this.model.url;
+        let pass_url = process_env.server_url+'/confluence_api/v1/3dmodels/'+this.model.url;
         let height = parseInt(this.height);
         let width = parseInt(this.width);
         if(!(height>=100 && height<=1000)){
@@ -192,7 +192,7 @@
         }else if(tag.indexOf(',')!=-1){
           this.tag_err = 'cannot use ","';
         }else{
-          this.$http.post('http://localhost:4941/confluence_api/v1/3dmodels/tags/'+this.my_id, {
+          this.$http.post(process_env.server_url+'/confluence_api/v1/3dmodels/tags/'+this.my_id, {
             "tag_label": tag
           }).then(function (result) {
             this.all_tags.push(tag);
@@ -207,7 +207,7 @@
         $('#tagModal').modal('hide');
       },
       delete_tag(del_tag){
-        this.$http.delete('http://localhost:4941/confluence_api/v1/3dmodels/tags/'+this.my_id+'/tag/' +del_tag).then(function (result) {
+        this.$http.delete(process_env.server_url+'/confluence_api/v1/3dmodels/tags/'+this.my_id+'/tag/' +del_tag).then(function (result) {
             this.all_tags.splice(this.all_tags.indexOf(del_tag), 1);
         });
       },
@@ -217,7 +217,7 @@
         }
       },
       get_all_tag_names(){
-        this.$http.get('http://localhost:4941/confluence_api/v1/3dmodels/tags/tag_name/all').then(function (result) {
+        this.$http.get(process_env.server_url+'/confluence_api/v1/3dmodels/tags/tag_name/all').then(function (result) {
           console.log(result);
           for(let tagname of result.body){
             this.all_tag_names.push(tagname);

@@ -11,7 +11,7 @@
           <h4>  If you'd like to create a new version,</h4>
           <h4>  please write down some comments and click confirm.</h4>
           <h4>  Otherwise, click cancel to quit.</h4>
-          <input type="text" class="form-control input-lg" id="version_comment" placeholder="Your Comment" v-model="version_comment">
+          <input type="text" class="form-control input-lg" id="version_comment" placeholder="Your Comment (less than 345 characters)" maxlength="345" v-model="version_comment">
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default btn-lg" data-dismiss="modal" @click="close_version_modal">Cancel</button>
@@ -55,9 +55,9 @@
     <div class="row" id="model_summary">
       <div class="offset-1 col-sm-4 align-items-center text-center" v-for="model in current_models" style="height: 300px; padding-top: 40px; padding-left: 30px;">
         <router-link :to="{path: '/3dmodels/detail/'+model.id}">
-          <img :src="'http://localhost:4941/confluence_api/v1/3dmodels/'+model.thumbnail" height="220" width="220"/>
+          <img :src="process_env.server_url+'/confluence_api/v1/3dmodels/'+model.thumbnail" height="220" width="220"/>
           <br><br>
-          <p style="font-family: Arial; font-size: 14px">{{model.name}}</p>
+          <p style="font-family: Arial; font-size: 14px"><a href="#" data-toggle="tooltip" :title="model.name" @mouseover="tooltip" data-placement="bottom">{{model.sub_name}}</a></p>
         </router-link>
       </div>
     </div>
@@ -115,7 +115,7 @@
         }
         let formData = new FormData();
         formData.append("upload_file", upload_file, upload_file.name);
-        this.$http.post('http://localhost:4941/confluence_api/v1/3dmodels/', formData,
+        this.$http.post(process_env.server_url+'/confluence_api/v1/3dmodels/', formData,
           {
             headers:
               {
@@ -129,7 +129,7 @@
             let myLoadFunc = function (blob) {
               formData= new FormData();
               formData.append("thumbnail", blob, id+".jpg");
-              self.$http.post('http://localhost:4941/confluence_api/v1/3dmodels/update_thumbnail', formData,
+              self.$http.post(process_env.server_url+'/confluence_api/v1/3dmodels/update_thumbnail', formData,
                 {
                   headers:
                     {
@@ -140,7 +140,7 @@
                 this.$router.push({path: '/3dmodels/detail/'+id});
               });
             };
-            marmoset.fetchThumbnail('http://localhost:4941/confluence_api/v1/3dmodels/'+url, myLoadFunc);
+            marmoset.fetchThumbnail(process_env.server_url+'/confluence_api/v1/3dmodels/'+url, myLoadFunc);
           }
         });
 
@@ -151,7 +151,7 @@
       let formData = new FormData();
       formData.append("version_comment", this.version_comment);
       formData.append("upload_file", this.my_upload_file, this.my_upload_file.name);
-      this.$http.post('http://localhost:4941/confluence_api/v1/3dmodels/versions', formData,
+      this.$http.post(process_env.server_url+'/confluence_api/v1/3dmodels/versions', formData,
         {
           headers:
             {
@@ -164,7 +164,7 @@
           let myLoadFunc = function (blob) {
             formData= new FormData();
             formData.append("thumbnail", blob, id+".jpg");
-            self.$http.post('http://localhost:4941/confluence_api/v1/3dmodels/update_thumbnail', formData,
+            self.$http.post(process_env.server_url+'/confluence_api/v1/3dmodels/update_thumbnail', formData,
               {
                 headers:
                   {
@@ -175,7 +175,7 @@
               this.$router.push({path: '/3dmodels/detail/'+id});
             });
           };
-          marmoset.fetchThumbnail('http://localhost:4941/confluence_api/v1/3dmodels/'+url, myLoadFunc);
+          marmoset.fetchThumbnail(process_env.server_url+'/confluence_api/v1/3dmodels/'+url, myLoadFunc);
         }
       });
     },
@@ -184,13 +184,25 @@
         let search_value = this.$route.query['search_name'];
         let select_tag = this.$route.query['select_tag'];
         let temp = [];
+        let sub_name = '';
 
-        this.$http.get('http://localhost:4941/confluence_api/v1/3dmodels/').then(function (res) {
+        this.$http.get(process_env.server_url+'/confluence_api/v1/3dmodels/').then(function (res) {
           this.all_models = res.body;
           if(search_value!=undefined){
             for(let model of this.all_models){
               if(model.name.toLowerCase().indexOf(search_value.toLowerCase())!=-1||(model.tagLabel&&model.tagLabel.toLowerCase().indexOf(search_value.toLowerCase())!=-1)){
-                  temp.push(model);
+                if(model.name.length>20){
+                  sub_name = model.name.slice(0, 20)+'...';
+                  let temp_name = ''
+                  for(let i=0; i*20<model.name.length;i++){
+                    temp_name += model.name.slice(i*20, (i+1)*20)+'\n';
+                  }
+                  model.name = temp_name;
+                }else{
+                  sub_name = model.name;
+                }
+                model['sub_name'] = sub_name;
+                temp.push(model);
               }
             }
               this.all_models = temp;
@@ -205,11 +217,23 @@
 
 
           else if(select_tag!=undefined){
-            this.$http.get('http://localhost:4941/confluence_api/v1/3dmodels/tag_name/'+select_tag).then(function (res) {
+
+            this.$http.get(process_env.server_url+'/confluence_api/v1/3dmodels/tag_name/'+select_tag).then(function (res) {
                 let model_ids = res.body;
                 for(let id of model_ids){
                   for(let model of this.all_models){
                     if(id.id == model.id){
+                      if(model.name.length>20){
+                        sub_name = model.name.slice(0, 20)+'...';
+                        let temp_name = ''
+                        for(let i=0; i*20<model.name.length;i++){
+                          temp_name += model.name.slice(i*20, (i+1)*20)+'\n';
+                        }
+                        model.name = temp_name;
+                      }else{
+                        sub_name = model.name;
+                      }
+                      model['sub_name'] = sub_name;
                       temp.push(model);
                     }
                   }
@@ -224,6 +248,19 @@
               }
             });
           }else{
+            for(let model of this.all_models){
+              if(model.name.length>20){
+                sub_name = model.name.slice(0, 20)+'...';
+                let temp_name = ''
+                for(let i=0; i*20<model.name.length;i++){
+                  temp_name += model.name.slice(i*20, (i+1)*20)+'\n';
+                }
+                model.name = temp_name;
+              }else{
+                sub_name = model.name;
+              }
+              model['sub_name'] = sub_name;
+            }
             this.total_num=Math.ceil(this.all_models.length/this.per_page);
             this.current_models=[];
             for(let i in this.all_models){
@@ -257,26 +294,20 @@
         }
       },
       get_all_tag_names(){
-        this.$http.get('http://localhost:4941/confluence_api/v1/3dmodels/tags/tag_name/all').then(function (result) {
+        this.$http.get(process_env.server_url+'/confluence_api/v1/3dmodels/tags/tag_name/all').then(function (result) {
           for(let tagname of result.body){
             this.all_tag_names.push(tagname.tagName);
           }
         });
       },
 
-
-//      search_model_by_tag(name){
-//        this.$http.get('http://localhost:4941/confluence_api/v1/3dmodels/tag_name/'+name).then(function (res) {
-//          let model_ids = res.body;
-//          let result = [];
-//          for(let id of model_ids){
-//            result.push(id.modelId);
-//          }
-//          return result;
-//        });
-//      },
       close_version_modal(){
               this.version_comment = '';
+      },
+      tooltip (){
+        $('[data-toggle="tooltip"]').tooltip({
+
+        });
       },
 
     }

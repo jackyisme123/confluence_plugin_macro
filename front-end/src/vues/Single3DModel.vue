@@ -17,7 +17,7 @@
       show_model_by_id () {
         let my_url = '';
         let auto_display = true;
-        this.$http.get('http://localhost:4941/confluence_api/v1/3dmodels/' + this.my_id).then(function (result) {
+        this.$http.get(process_env.server_url+'/confluence_api/v1/3dmodels/' + this.my_id).then(function (result) {
           for(let body_part of result.body) {
             my_url = body_part.url;
             if(body_part.autoDisplay==0){
@@ -25,7 +25,7 @@
             }
           }
           var params = {fullFrame: true, autoStart: true, autoStart: auto_display};
-          var myviewer = marmoset.embed('http://localhost:4941/confluence_api/v1/3dmodels/'+my_url, params);
+          var myviewer = marmoset.embed(process_env.server_url+'/confluence_api/v1/3dmodels/'+my_url, params);
 
         });
       }

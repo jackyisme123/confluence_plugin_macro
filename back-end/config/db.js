@@ -17,6 +17,7 @@ exports.connect = function(done){
     let count = 0;
     var timer = setInterval(function(){state.pool.getConnection(function (err, connection) {
         if(err){
+            console.log(err);
             count += 1;
             console.log('Cannot connect database, count times = ' + count +', max count number is 5');
             if (count == 5){

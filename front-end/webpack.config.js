@@ -69,6 +69,13 @@ module.exports = {
       }
     ]
   },
+  plugins: [
+    new webpack.DefinePlugin(
+      {"process_env" :{
+        "server_url": "'http://localhost:4941'"
+      }}
+    )
+  ],
   resolve: {
     alias: {
       'vue$': 'vue/dist/vue.esm.js'
@@ -78,7 +85,14 @@ module.exports = {
   devServer: {
     historyApiFallback: true,
     noInfo: true,
-    overlay: true
+    overlay: true,
+    // plugins: [
+    //   new webpack.DefinePlugin(
+    //     {'process.env': {
+    //       'server_url' : "'http://localhost:4941'"
+    //     }}
+    //   )
+    // ]
   },
   performance: {
     hints: false

@@ -97,7 +97,8 @@
           <div class="modal-body">
             <div class="form-group">
               <label for="comment">New Comment:</label>
-              <textarea class="form-control" rows="5" id="comment" placeholder="Add your comment here" v-model="my_comment"></textarea>
+              <textarea class="form-control" rows="5" id="comment" placeholder="Add your comment here" v-model="my_comment" maxlength="345" type="resize: none;"></textarea>
+              <div class="pull-right"><h6>{{max_char - my_comment.length}} remaining</h6></div>
             </div>
           </div>
           <div class="modal-footer">
@@ -125,7 +126,8 @@
         delete_modal_content: '',
         deleting_model: null,
         my_comment: '',
-        comment_model: null
+        comment_model: null,
+        max_char: 345
       }
     },
     mounted: function () {
@@ -133,7 +135,7 @@
     },
     methods: {
       get_model_detail(){
-          this.$http.get('http://localhost:4941/confluence_api/v1/3dmodels/versions/'+this.my_file_name).then(function (res2) {
+          this.$http.get(process_env.server_url+'/confluence_api/v1/3dmodels/versions/'+this.my_file_name).then(function (res2) {
             this.all_versions = res2.body;
             for(let version of this.all_versions){
               if(version.isCurrentVersion){
@@ -142,7 +144,12 @@
               let sub_version_comment = '';
               if(version.versionComment){
                 if(version.versionComment.length>10){
-                  sub_version_comment = version.versionComment.substring(0, 9)+"...";
+                  sub_version_comment = version.versionComment.substring(0, 10)+"...";
+                  let temp_name = ''
+                  for(let i=0; i*20<version.versionComment.length;i++){
+                    temp_name += version.versionComment.slice(i*20, (i+1)*20)+'\n';
+                  }
+                  version.versionComment = temp_name;
                 }else{
                   sub_version_comment = version.versionComment;
                 }
@@ -183,7 +190,7 @@
       use_version(my_model){
         let current_version_id = this.current_version.id;
         let new_version_id = my_model.id;
-        this.$http.put("http://localhost:4941/confluence_api/v1/3dmodels/versions",
+        this.$http.put(process_env.server_url+"/confluence_api/v1/3dmodels/versions",
           {
             "old_version_id": current_version_id,
             "new_version_id": new_version_id
@@ -203,11 +210,11 @@
       },
       delete_model(){
         if(this.current_version.id == this.deleting_model.id && this.all_versions.length!=1){
-          this.$http.delete("http://localhost:4941/confluence_api/v1/3dmodels/versions/"+this.deleting_model.id+"/name/"+this.deleting_model.name).then(function (result1) {
+          this.$http.delete(process_env.server_url+"/confluence_api/v1/3dmodels/versions/"+this.deleting_model.id+"/name/"+this.deleting_model.name).then(function (result1) {
             this.get_model_detail();
           });
         }else{
-          this.$http.delete("http://localhost:4941/confluence_api/v1/3dmodels/versions/"+this.deleting_model.id+"/name/zero").then(function (result2) {
+          this.$http.delete(process_env.server_url+"/confluence_api/v1/3dmodels/versions/"+this.deleting_model.id+"/name/zero").then(function (result2) {
             if(this.all_versions.length == 1){
               this.$router.push({path: '/3dmodels'});
             }else{
@@ -218,7 +225,7 @@
 
       },
       modify_comment(){
-        this.$http.put("http://localhost:4941/confluence_api/v1/3dmodels/versions/comment/"+this.comment_model.id,
+        this.$http.put(process_env.server_url+"/confluence_api/v1/3dmodels/versions/comment/"+this.comment_model.id,
           {
             "comment": this.my_comment
           }).then(function (result) {

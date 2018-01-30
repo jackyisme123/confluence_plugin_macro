@@ -1,3 +1,4 @@
+<!-- Home Page -->
 <template>
 <div>
   <div id="versionModal" class="modal fade" role="dialog">
@@ -22,9 +23,6 @@
   </div>
   <nav class="navbar navbar-light" style="background-color: #e3f2fd;">
     <div class="container-fluid">
-      <!--<div class="navbar-header">-->
-      <!--<a class="navbar-brand" href="#">Confluence Marco Extension</a>-->
-      <!--</div>-->
       <ul class="nav navbar-nav">
         <li class="nav-item"><router-link :to="{path: '/3dmodels'}"><span class="fa fa-cube fa-lg" aria-hidden="true"></span> 3D</router-link></li>
         <!--<li class="nav-item"><router-link :to="{path: '/videos'}"><span class="fa fa-video-camera fa-lg" aria-hidden="true"></span> Video</router-link></li>-->
@@ -53,11 +51,11 @@
 </div>
   <hr>
     <div class="row" id="model_summary">
-      <div class="offset-1 col-sm-4 align-items-center text-center" v-for="model in current_models" style="height: 300px; padding-top: 40px; padding-left: 30px;">
+      <div class="col-sm-3 text-center" v-for="model in current_models" style="height: 250px; padding-top: 10px; padding-left: 20px;">
         <router-link :to="{path: '/3dmodels/detail/'+model.id}">
-          <img :src="process_env.server_url+'/confluence_api/v1/3dmodels/'+model.thumbnail" height="220" width="220"/>
+          <img :src="my_server_url+'/confluence_api/v1/3dmodels/'+model.thumbnail" height="150" width="150"/>
           <br><br>
-          <p style="font-family: Arial; font-size: 14px"><a href="#" data-toggle="tooltip" :title="model.name" @mouseover="tooltip" data-placement="bottom">{{model.sub_name}}</a></p>
+          <p style="font-family: Arial; font-size: 14px"><a href="#" data-toggle="tooltip" :title="model.temp_name" @mouseover="tooltip" data-placement="bottom">{{model.sub_name}}</a></p>
         </router-link>
       </div>
     </div>
@@ -85,12 +83,14 @@
         search_models: [],
         err_msg: '',
         page_num:1,
-        per_page:6,
+        per_page:8,
         total_num:0,
         current_models: [],
         all_tag_names: [],
         version_comment: '',
         my_upload_file: null,
+        //process_env.server_url can be modified in webpack.config.js
+        my_server_url: process_env.server_url
       }
     },
     mounted: function () {
@@ -108,6 +108,7 @@
           return;
         }
         for (let model of this.all_models){
+          // if model name exists, open version modal to add new version
           if(model.name == upload_file.name){
             $('#versionModal').modal('show');
             return;
@@ -190,22 +191,27 @@
           this.all_models = res.body;
           if(search_value!=undefined){
             for(let model of this.all_models){
+              // search by file name or tag name
               if(model.name.toLowerCase().indexOf(search_value.toLowerCase())!=-1||(model.tagLabel&&model.tagLabel.toLowerCase().indexOf(search_value.toLowerCase())!=-1)){
-                if(model.name.length>20){
-                  sub_name = model.name.slice(0, 20)+'...';
+                //Model name maximum length showed is 15, rest is shown by '...'
+                if(model.name.length>15){
+                  sub_name = model.name.slice(0, 15)+'...';
                   let temp_name = ''
-                  for(let i=0; i*20<model.name.length;i++){
-                    temp_name += model.name.slice(i*20, (i+1)*20)+'\n';
+                  for(let i=0; i*15<model.name.length;i++){
+                    temp_name += model.name.slice(i*15, (i+1)*15)+'\n';
                   }
-                  model.name = temp_name;
+                  model['temp_name'] = temp_name;
                 }else{
                   sub_name = model.name;
+                  model['temp_name'] = model.name;
                 }
                 model['sub_name'] = sub_name;
                 temp.push(model);
               }
             }
               this.all_models = temp;
+
+            //pagination
               this.total_num=Math.ceil(this.all_models.length/this.per_page);
               this.current_models=[];
               for(let i in this.all_models){
@@ -214,24 +220,23 @@
                 }
               }
             }
-
-
+          //search by click tag
           else if(select_tag!=undefined){
-
             this.$http.get(process_env.server_url+'/confluence_api/v1/3dmodels/tag_name/'+select_tag).then(function (res) {
                 let model_ids = res.body;
                 for(let id of model_ids){
                   for(let model of this.all_models){
                     if(id.id == model.id){
-                      if(model.name.length>20){
-                        sub_name = model.name.slice(0, 20)+'...';
+                      if(model.name.length>15){
+                        sub_name = model.name.slice(0, 15)+'...';
                         let temp_name = ''
-                        for(let i=0; i*20<model.name.length;i++){
-                          temp_name += model.name.slice(i*20, (i+1)*20)+'\n';
+                        for(let i=0; i*15<model.name.length;i++){
+                          temp_name += model.name.slice(i*15, (i+1)*15)+'\n';
                         }
-                        model.name = temp_name;
+                        model['temp_name'] = temp_name;
                       }else{
                         sub_name = model.name;
+                        model['temp_name'] = model.name;
                       }
                       model['sub_name'] = sub_name;
                       temp.push(model);
@@ -247,17 +252,19 @@
                 }
               }
             });
+            //no search
           }else{
             for(let model of this.all_models){
-              if(model.name.length>20){
-                sub_name = model.name.slice(0, 20)+'...';
+              if(model.name.length>15){
+                sub_name = model.name.slice(0, 15)+'...';
                 let temp_name = ''
-                for(let i=0; i*20<model.name.length;i++){
-                  temp_name += model.name.slice(i*20, (i+1)*20)+'\n';
+                for(let i=0; i*15<model.name.length;i++){
+                  temp_name += model.name.slice(i*15, (i+1)*15)+'\n';
                 }
-                model.name = temp_name;
+                model['temp_name'] = temp_name;
               }else{
                 sub_name = model.name;
+                model['temp_name'] = model.name;
               }
               model['sub_name'] = sub_name;
             }
@@ -275,6 +282,7 @@
       search_models_func() {
         let search_value = document.getElementById("search_input").value;
         this.$router.push({path: '/3dmodels?search_name='+search_value});
+        //must refresh page, or won't be shown properly
         this.$router.go();
       },
       go_page(pn){

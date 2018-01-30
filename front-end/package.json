@@ -6,11 +6,13 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack-dev-server --hot --host 0.0.0.0",
+    "dev": "cross-env NODE_ENV=development webpack-dev-server --public 'cce.forge.wetaworkshop.co.nz' --host 0.0.0.0",
     "build": "cross-env NODE_ENV=production webpack --progress --hide-modules"
   },
   "dependencies": {
     "bootstrap": "^3.3.7",
+    "ejs": "^2.5.7",
+    "express": "^4.16.2",
     "font-awesome": "^4.7.0",
     "vue": "^2.5.11",
     "vue-instant": "^1.0.2",

@@ -7,11 +7,11 @@ const state = {
 exports.connect = function(done){
     state.pool = mysql.createPool({
         connectionLimit: 100,
-        host: process.env.SENG365_MYSQL_HOST || 'localhost',
+        host: process.env.SENG365_MYSQL_HOST || 'mysql',
         port: process.env.SENG365_MYSQL_PORT || '3306',
-        user: 'admin',
-        password: 'admin',
-        database: 'confluence',
+        user: 'root',
+        password: 'xnmutbpHq9gTZPLcVWz0',
+        database: 'cce',
         multipleStatements: true
     });
     let count = 0;
@@ -44,7 +44,7 @@ exports.connect = function(done){
 
     });
 
-    }, 2000);
+    }, 12000);
     done();
 };
 

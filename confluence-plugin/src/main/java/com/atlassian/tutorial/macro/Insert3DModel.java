@@ -1,22 +1,13 @@
 package com.atlassian.tutorial.macro;
 
 import com.atlassian.confluence.content.render.xhtml.ConversionContext;
-//import com.atlassian.confluence.core.ContentEntityObject;
 import com.atlassian.confluence.macro.Macro;
 import com.atlassian.confluence.macro.MacroExecutionException;
-//import com.atlassian.confluence.pages.Attachment;
-//import com.atlassian.confluence.renderer.PageContext;
-
-import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
 
-public class Insert3DModelTest implements Macro {
-
-
-
+public class Insert3DModel implements Macro {
     public String execute(Map<String, String> map, String s, ConversionContext conversionContext) throws MacroExecutionException{
         String downloadURL =map.get("url");
         String height =map.get("height");
@@ -26,11 +17,8 @@ public class Insert3DModelTest implements Macro {
         URL url;
         String returnPart = "";
         HttpURLConnection con = null;
-        System.out.println(newURL);
-
         try {
             url = new URL(newURL);
-//            InputStream in = url.openStream();
             con = (HttpURLConnection) url.openConnection();
             con.setRequestMethod("HEAD");
             con.setConnectTimeout(1000);
@@ -56,12 +44,15 @@ public class Insert3DModelTest implements Macro {
                 }
             }else{
                 System.out.println("failure");
-                returnPart =  "<h3 style=\"color:red\">Sorry, your file is not existed any more!</h2>\n";
+                returnPart =  "<h3 style=\"color:red\">Sorry, cannot connect with server!</h3>\n";
             }
         }
         catch (Exception e) {
-            e.printStackTrace();
-            return "<h3 style=\"color:red\">Sorry, your file is not existed any more!</h2>\n";
+            if(e.getMessage().equals("Read timed out")){
+                return "<h3 style=\"color:red\">Sorry, your file is not existed any more!</h3>\n";
+            }else{
+                return "<h3 style=\"color:red\">Sorry, we meet an error: '"+e.getMessage()+"' cannot show 3d model properly</h3>\n";
+            }
         }
 
         return returnPart;

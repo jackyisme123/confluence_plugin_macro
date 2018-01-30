@@ -1,13 +1,10 @@
+<!-- show version detail -->
 <template>
   <div id="version">
     <nav class="navbar navbar-light" style="background-color: #e3f2fd;">
       <div class="container-fluid">
-        <!--<div class="navbar-header">-->
-          <!--<a class="navbar-brand" href="#">Confluence Marco Extension</a>-->
-        <!--</div>-->
         <ul class="nav navbar-nav">
           <li class="nav-item"><router-link :to="{path: '/3dmodels'}"><span class="fa fa-cube fa-lg" aria-hidden="true"></span> 3D</router-link></li>
-          <!--<li class="nav-item"><router-link :to="{path: '/videos'}"><span class="fa fa-video-camera fa-lg" aria-hidden="true"></span> Video</router-link></li>-->
         </ul>
       </div>
     </nav>
@@ -119,7 +116,7 @@
         my_file_name: this.$route.params.name,
         all_versions: [],
         page_num:1,
-        per_page:10,
+        per_page:5,
         total_num:0,
         page_versions: [],
         current_version: null,
@@ -145,7 +142,8 @@
               if(version.versionComment){
                 if(version.versionComment.length>10){
                   sub_version_comment = version.versionComment.substring(0, 10)+"...";
-                  let temp_name = ''
+                  let temp_name = '';
+                  //maximum name shown length is 20
                   for(let i=0; i*20<version.versionComment.length;i++){
                     temp_name += version.versionComment.slice(i*20, (i+1)*20)+'\n';
                   }

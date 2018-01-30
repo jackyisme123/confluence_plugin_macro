@@ -71,8 +71,8 @@ module.exports = {
   },
   plugins: [
     new webpack.DefinePlugin(
-      {"process_env" :{
-        "server_url": "'http://localhost:4941'"
+      {"process_env": {
+        "server_url": "'https://cce.forge.wetaworkshop.co.nz:8443'"
       }}
     )
   ],

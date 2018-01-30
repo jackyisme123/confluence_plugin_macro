@@ -1,5 +1,6 @@
+<!-- embed 3d model page -->
 <template>
-  <div class="3d_model_div">Refresh Browser</div>
+  <div class="3d_model_div"><h7>Because of the technique reason, 3d model cannot be showed properly. Please click <span><a @click="refresh">refresh</a></span> link.</h7></div>
 </template>
 
 
@@ -28,6 +29,9 @@
           var myviewer = marmoset.embed(process_env.server_url+'/confluence_api/v1/3dmodels/'+my_url, params);
 
         });
+      },
+      refresh(){
+        show_model_by_id();
       }
     }
   }

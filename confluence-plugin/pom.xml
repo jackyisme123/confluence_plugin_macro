@@ -5,17 +5,17 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.atlassian.tutorial</groupId>
-    <artifactId>myConfluenceMacro</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <groupId>com.wetanz.cce</groupId>
+    <artifactId>ConfluenceContentEmbedder</artifactId>
+    <version>1.0.10</version>
 
     <organization>
         <name>Weta Workshop</name>
-        <url>http://www.wetaworkshop.com</url>
+        <url>https://www.wetanz.com/</url>
     </organization>
 
-    <name>myConfluenceMacro</name>
-    <description>This is the com.atlassian.tutorial:myConfluenceMacro plugin for Atlassian Confluence.</description>
+    <name>Confluence Content Embedder</name>
+    <description>This is the com.wetanz.it:ConfluenceContentEmbedder plugin for Atlassian Confluence.</description>
     <packaging>atlassian-plugin</packaging>
 
     <dependencies>

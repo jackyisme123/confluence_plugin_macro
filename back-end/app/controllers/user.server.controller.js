@@ -2,6 +2,7 @@ const user = require('../models/user.server.models.js');
 const formidable = require('formidable');
 const fs = require('fs');
 
+/* create a new 3dmodel (not existed previous version */
 exports.create_single_3dmodel = function (req, res) {
     let my_id ='';
     let fileURL = '';
@@ -38,6 +39,7 @@ exports.create_single_3dmodel = function (req, res) {
     });
 };
 
+/* add new version of specific 3dmodel */
 exports.add_new_version = function (req, res) {
     let file_name = '';
     let version_comment= '';
@@ -65,7 +67,7 @@ exports.add_new_version = function (req, res) {
     });
 };
 
-
+/* store thumbnail url to database */
 exports.update_thumbnail = function (req, res) {
     let form = new formidable.IncomingForm();
     form.parse(req);
@@ -93,7 +95,7 @@ exports.update_thumbnail = function (req, res) {
 
 };
 
-
+/* get all 3dmodels */
 exports.get_all_3dmodels = function (req, res) {
     user.get_all_current_version(function (err, result) {
        if(err){
@@ -104,6 +106,7 @@ exports.get_all_3dmodels = function (req, res) {
     });
 };
 
+/* get 3dmodel detail */
 exports.get_3dmodel_detail = function (req, res) {
     let id = req.params.id;
     user.get_single_3dmodel(id, function (err, result) {
@@ -115,6 +118,7 @@ exports.get_3dmodel_detail = function (req, res) {
     });
 };
 
+/* delete 3dmodel */
 exports.delete_3dmodel = function (req, res) {
     let id = req.params.id;
     user.delete_single_3dmodel(id, function (err, result) {
@@ -126,6 +130,7 @@ exports.delete_3dmodel = function (req, res) {
     });
 };
 
+/* get file by file name*/
 exports.get_file = function (req, res) {
     let file_name = req.params.file_name;
     fs.readFile('./uploads/'+file_name, function (err, data) {
@@ -137,7 +142,7 @@ exports.get_file = function (req, res) {
     });
 };
 
-
+/* get all tags by 3dmodel id */
 exports.get_all_tags_by_id = function (req, res) {
     let id = req.params.id;
     user.get_all_tags(id, function (err, result) {
@@ -149,6 +154,7 @@ exports.get_all_tags_by_id = function (req, res) {
     });
 };
 
+/* add a tag to specific 3dmodel */
 exports.add_tag = function (req, res) {
     let tag_label = req.body.tag_label;
     let id = req.params.id;
@@ -161,6 +167,7 @@ exports.add_tag = function (req, res) {
     });
 };
 
+/* delete tag from specific 3dmodel */
 exports.delete_tag = function (req, res) {
     let tag_label = req.params.tag_name;
     let id = req.params.id;
@@ -173,6 +180,7 @@ exports.delete_tag = function (req, res) {
     });
 };
 
+/* get all 3dmodels by tag name */
 exports.get_by_tagname = function (req, res) {
     let tag_label = req.params.tag_name;
     user.get_models_by_tag(tag_label, function (err, result) {
@@ -184,6 +192,7 @@ exports.get_by_tagname = function (req, res) {
     });
 };
 
+/* get all tag names from all 3dmodels */
 exports.get_all_tag_names = function (req, res) {
     user.get_all_tagnames(function (err, result) {
        if(err){
@@ -208,6 +217,7 @@ exports.get_all_tag_names = function (req, res) {
     });
 };
 
+/* get all versions from specific 3dmodel by name */
 exports.get_all_version_by_name = function (req, res) {
     let file_name = req.params.name;
     user.get_all_versions(file_name, function (err, result) {
@@ -219,6 +229,7 @@ exports.get_all_version_by_name = function (req, res) {
     });
 };
 
+/* update current version (version control) */
 exports.update_current_version = function (req, res) {
     let old_version_id = req.body.old_version_id;
     let new_version_id = req.body.new_version_id;
@@ -237,10 +248,10 @@ exports.update_current_version = function (req, res) {
     });
 };
 
+/* delete version from specific 3dmodel */
 exports.delete_version = function (req, res) {
     let delete_id = req.params.id;
     let name = req.params.name;
-    console.log("delete_id: "+delete_id);
     user.remove_version_by_id(delete_id, function (err1, result1) {
         if(err1){
             console.log(err1);
@@ -270,6 +281,7 @@ exports.delete_version = function (req, res) {
 
 };
 
+/* update version comment */
 exports.update_version_comment = function (req, res) {
     let id = req.params.id;
     let new_comment = req.body.comment;
@@ -282,3 +294,14 @@ exports.update_version_comment = function (req, res) {
     });
 };
 
+/* delete model of all versions*/
+exports.delete_all_versions_by_name = function (req, res) {
+    let name = req.params.name;
+    user.delete_all_versions(name, function (err, result) {
+        if(err){
+            console.log(err);
+        }else{
+            res.status(200).send("success");
+        }
+    });
+};

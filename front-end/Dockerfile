@@ -1,6 +1,4 @@
-FROM alpine:3.6
-
-RUN apk add --no-cache nodejs nodejs-npm
+FROM node:9.3.0
 
 RUN mkdir -p /usr/src/app1
 WORKDIR /usr/src/app1
@@ -10,9 +8,13 @@ RUN npm install
 
 COPY . /usr/src/app1
 
-#RUN npm run build
-ENV NODE_ENV development
-ENV PORT=8080
-EXPOSE 8080
+RUN npm run build
+RUN rm -rf ./src
 
-CMD [ "npm", "run", "dev" ]
+
+ENV PORT=8080
+ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
+
+CMD [ "node", "server.js" ]
+
+USER node

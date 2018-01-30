@@ -12,11 +12,9 @@ module.exports = function (app) {
     app.route('/confluence_api/v1/3dmodels').post(user.create_single_3dmodel);
     app.route('/confluence_api/v1/3dmodels').get(user.get_all_3dmodels);
     app.route('/confluence_api/v1/3dmodels/:id').get(user.get_3dmodel_detail);
-    // app.route('/confluence_api/v1/3dmodels/:id').put(user.update_3dmodel);
     app.route('/confluence_api/v1/3dmodels/:id').delete(user.delete_3dmodel);
     app.route('/confluence_api/v1/3dmodels/uploads/:file_name').get(user.get_file);
     app.route('/confluence_api/v1/3dmodels/update_thumbnail').post(user.update_thumbnail);
-    // app.route('/confluence_api/v1/3dmodels/:id/auto_display/:bool').put(user.auto_display);
     app.route('/confluence_api/v1/3dmodels/tags/:id').get(user.get_all_tags_by_id);
     app.route('/confluence_api/v1/3dmodels/tags/:id').post(user.add_tag);
     app.route('/confluence_api/v1/3dmodels/tags/:id/tag/:tag_name').delete(user.delete_tag);
@@ -27,6 +25,7 @@ module.exports = function (app) {
     app.route('/confluence_api/v1/3dmodels/versions').put(user.update_current_version);
     app.route('/confluence_api/v1/3dmodels/versions/:id/name/:name').delete(user.delete_version);
     app.route('/confluence_api/v1/3dmodels/versions/comment/:id').put(user.update_version_comment);
+    app.route('/confluence_api/v1/3dmodels/versions/:name').delete(user.delete_all_versions_by_name);
 
 
 };

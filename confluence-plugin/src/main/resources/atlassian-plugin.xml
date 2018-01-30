@@ -15,67 +15,42 @@
     
     <!-- add our web resources -->
     <web-resource key="myConfluenceMacro-resources" name="myConfluenceMacro Web Resources">
-
-        <!--<resource type="download" name="overrideUserMacro.js" location="/js/overrideUserMacro.js"/>-->
         
         <resource type="download" name="myConfluenceMacro.css" location="/css/myConfluenceMacro.css"/>
-
-        <!--<resource type="download" name="myConfluenceMacro.js" location="/js/myConfluenceMacro.js"/>-->
-
         <resource type="download" name="images/" location="/images"/>
         <context>myConfluenceMacro</context>
-        <dependency>com.atlassian.auiplugin:dialog2</dependency>
+        <dependency>com.atlassian.auiplugin:dialog</dependency>
         <dependency>com.atlassian.auiplugin:ajs</dependency>
         <dependency>confluence.web.resources:ajs</dependency>
         <dependency>com.atlassian.confluence.confluence:macro-browser-js</dependency>
         <dependency>com.atlassian.confluence.confluence:macro-browser-resources</dependency>
     </web-resource>
 
+    <!-- add your self-designed user macro browser js file -->
     <web-resource name="JS / CSS for the macro in the Rich Text Editor" key="my-plugin-rte">
         <transformation extension="js">
             <transformer key="jsI18n"/>
         </transformation>
         <resource type="download" name="myConfluenceMacro.js" location="/js/myConfluenceMacro.js"/>
         <context>editor</context>
-        <dependency>com.atlassian.auiplugin:dialog2</dependency>
+        <dependency>com.atlassian.auiplugin:dialog</dependency>
         <dependency>com.atlassian.auiplugin:ajs</dependency>
     </web-resource>
-    <xhtml-macro name="insert_3d_model" class="com.atlassian.tutorial.macro.Insert3DModel" key='insert3dmodel-macro' icon="/download/resources/${project.groupId}.${project.artifactId}/icons/3d.png">
+
+
+    <xhtml-macro name="insert_3d_model" class="com.atlassian.tutorial.macro.Insert3DModel" key='insert3dmodel-macro' icon="/download/resources/${project.groupId}.${project.artifactId}/icons/test.jpg">
         <description key="insert3dmodel.macro.desc"/>
         <category name="development"/>
         <parameters>
-            <parameter name="myAttachment" type="confluence-content" required="true">
-                <option key="type" value="attachment"/>
-                <option key="showKeyInPlaceholder" value="false" />
-                <option key="showValueInPlaceholder" value="true" />
-            </parameter>
-            <!--<parameter name="URL" title="URL" type="string" required="true"/>-->
-            <parameter name="height" title ="Height" type="string" default="300" ></parameter>
-            <parameter name="width" title="Width" type="string" default="300" ></parameter>
-        </parameters>
-    </xhtml-macro>
-
-    <xhtml-macro name="insert_3d_model_by_url" class="com.atlassian.tutorial.macro.Insert3DModelByURL" key='insert3dmodelbyurl-macro' icon="/download/resources/${project.groupId}.${project.artifactId}/icons/url.png">
-        <description key="insert3dmodelbyurl.macro.desc"/>
-        <category name="development"/>
-        <parameters>
-            <parameter name="URL" title="URL" type="string" required="true"/>
-            <parameter name="height" title ="Height" type="string" default="300" ></parameter>
-            <parameter name="width" title="Width" type="string" default="300" ></parameter>
-        </parameters>
-    </xhtml-macro>
-
-    <xhtml-macro name="insert_3d_model_test" class="com.atlassian.tutorial.macro.Insert3DModelTest" key='insert3dmodeltest-macro' icon="/download/resources/${project.groupId}.${project.artifactId}/icons/test.jpg">
-        <description key="insert3dmodeltest.macro.desc"/>
-        <category name="development"/>
-        <parameters>
-            <parameter name="url" type="string" required="true">
-                <!--<option name="one"></option>-->
-                <!--<option name="two"></option>-->
-                <!--<option name="three"></option>-->
-            </parameter>
-            <!--<parameter name="height" title ="Height" type="string" default="300" ></parameter>-->
-            <!--<parameter name="width" title="Width" type="string" default="300" ></parameter>-->
+            <!-- ***Important***
+            *********************************************************************************************************************************************
+            *** The parameters don't work anything, but at least one parameter has to be reserved, or self-designed user macro browser won't be pop-up***
+            *********************************************************************************************************************************************
+            -->
+            <parameter name="url" type="string" required="true"></parameter>
+            <parameter name="height" type="string" required="true"></parameter>
+            <parameter name="width" type="string" required="true"></parameter>
+            <parameter name="auto_display" type="string" required="true"></parameter>
         </parameters>
     </xhtml-macro>
 

@@ -203,11 +203,11 @@
       add_tag() {
         let tag = this.tag_input;
         if(tag==''){
-          this.tag_err = 'tag cannot be empty!';
+          this.tag_err = 'Tag cannot be empty!';
         }else if(this.all_tags.indexOf(tag) != -1){
-          this.tag_err = 'tag already existed!';
+          this.tag_err = 'Tag already exists!';
         }else if(tag.indexOf(',')!=-1){
-          this.tag_err = 'cannot use ","';
+          this.tag_err = 'Cannot use ","';
         }else{
           this.$http.post(process_env.server_url+'/confluence_api/v1/3dmodels/tags/'+this.my_id, {
             "tag_label": tag

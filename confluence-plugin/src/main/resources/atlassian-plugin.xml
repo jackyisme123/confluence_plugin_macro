@@ -11,12 +11,11 @@
     <resource type="i18n" name="i18n" location="myConfluenceMacro"/>
 
 
-    <resource key="icons" name="icons/" type="download" location="/myplugin/images/icons"/>
+    <resource key="icons" name="icons/" type="download" location="/cce/images/icons"/>
     
     <!-- add our web resources -->
     <web-resource key="myConfluenceMacro-resources" name="myConfluenceMacro Web Resources">
         
-        <resource type="download" name="myConfluenceMacro.css" location="/css/myConfluenceMacro.css"/>
         <resource type="download" name="images/" location="/images"/>
         <context>myConfluenceMacro</context>
         <dependency>com.atlassian.auiplugin:dialog</dependency>
@@ -31,16 +30,16 @@
         <transformation extension="js">
             <transformer key="jsI18n"/>
         </transformation>
-        <resource type="download" name="myConfluenceMacro.js" location="/js/myConfluenceMacro.js"/>
+        <resource type="download" name="cce.js" location="/js/cce.js"/>
         <context>editor</context>
         <dependency>com.atlassian.auiplugin:dialog</dependency>
         <dependency>com.atlassian.auiplugin:ajs</dependency>
     </web-resource>
 
 
-    <xhtml-macro name="insert_3d_model" class="com.atlassian.tutorial.macro.Insert3DModel" key='insert3dmodel-macro' icon="/download/resources/${project.groupId}.${project.artifactId}/icons/test.jpg">
-        <description key="insert3dmodel.macro.desc"/>
-        <category name="development"/>
+    <xhtml-macro name="3D Model" class="com.wetaworkshop.macro.Insert3DModel" key='3d-model' icon="/download/resources/${project.groupId}.${project.artifactId}/icons/MarmosetViewerLogo.jpg">
+        <description>Inserts a 3D model into the page.</description>
+        <category name="media"/>
         <parameters>
             <!-- ***Important***
             *********************************************************************************************************************************************

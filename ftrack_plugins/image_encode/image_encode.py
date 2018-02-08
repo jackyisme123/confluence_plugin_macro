@@ -7,6 +7,10 @@
 # least 3.3.18.
 # Note: This action will currently not handle versions added via the upload
 # media dialog, since their versions are created after the components.
+# Version 1.1
+# - Update thumbnail for task as well when a new version is uploaded
+# Version 1.0
+# - Initial release
 
 import os
 import logging
@@ -78,6 +82,7 @@ def main(arguments=None):
             logging.debug('Thumbnail has been existed')
             return
         version1 = component['version']
+        task = version1['task']
         if not version1:
             logging.debug('Not a version')
             return
@@ -128,7 +133,7 @@ def main(arguments=None):
         )
         # use thumbnail component as the component of view
         component = thumbnail_component
-
+        task['thumbnail'] = thumbnail_component
         if version1['asset']['type_id'] != UPLOAD_TYPE_ID:
             logging.warning('Asset is not of upload type.')
             return

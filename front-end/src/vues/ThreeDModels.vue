@@ -104,7 +104,7 @@
         this.my_upload_file = document.getElementById("upload_file").files[0];
         let upload_file = this.my_upload_file;
         if (upload_file.name.toLowerCase().indexOf(".mview")==-1){
-          this.err_msg = "Error: invalid file type";
+          this.err_msg = "Error: Invalid file type, only .mview files are supported.";
           return;
         }
         for (let model of this.all_models){

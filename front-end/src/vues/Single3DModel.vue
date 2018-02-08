@@ -1,6 +1,6 @@
 <!-- embed 3d model page -->
 <template>
-  <div class="3d_model_div"><h7>Because of the technique reason, 3d model cannot be showed properly. Please click <span><a @click="refresh">refresh</a></span> link.</h7></div>
+  <div class="3d_model_div"><h7>Something went wrong, please refresh the page in your browser.</h7></div>
 </template>
 
 
@@ -26,12 +26,14 @@
             }
           }
           var params = {fullFrame: true, autoStart: true, autoStart: auto_display};
-          var myviewer = marmoset.embed(process_env.server_url+'/confluence_api/v1/3dmodels/'+my_url, params);
+          try{
+            var myviewer = marmoset.embed(process_env.server_url+'/confluence_api/v1/3dmodels/'+my_url, params);
+          }catch (err){
+            console.log(err);
+            this.$router.go(0);
+          }
 
         });
-      },
-      refresh(){
-        show_model_by_id();
       }
     }
   }

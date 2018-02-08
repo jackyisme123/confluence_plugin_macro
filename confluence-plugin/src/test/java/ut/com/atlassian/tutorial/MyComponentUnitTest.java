@@ -1,8 +1,8 @@
 package ut.com.atlassian.tutorial;
 
 import org.junit.Test;
-import com.atlassian.tutorial.api.MyPluginComponent;
-import com.atlassian.tutorial.impl.MyPluginComponentImpl;
+import com.wetaworkshop.api.MyPluginComponent;
+import com.wetaworkshop.impl.MyPluginComponentImpl;
 
 import static org.junit.Assert.assertEquals;
 

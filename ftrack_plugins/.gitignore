@@ -47,3 +47,8 @@ com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
 fabric.properties
+
+# save_file for quick notes
+save.p
+quick_notes.spec
+build/

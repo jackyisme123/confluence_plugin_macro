@@ -198,9 +198,9 @@
       },
       change_delete_modal_content(my_model){
         if(this.all_versions.length == 1){
-          this.delete_modal_content = "This is last version of "+my_model.name+". Do your still want to delete it?";
+          this.delete_modal_content = "This is last version of "+my_model.name+". Are you sure that you want to delete it?";
         } else if(this.current_version.id == my_model.id){
-          this.delete_modal_content = "v"+this.current_version.version+" is the currently used version of "+this.current_version.name+". If deleted, current version will be replaced by latest one. Do you still want to delete it?";
+          this.delete_modal_content = "v"+this.current_version.version+" is the currently used version of "+this.current_version.name+". If deleted, current version will be replaced by latest one. Are you sure that you want to delete it?";
         }else{
           this.delete_modal_content = "Do you want to delete v"+this.current_version.version+" of "+this.current_version.name+" ?";
         }

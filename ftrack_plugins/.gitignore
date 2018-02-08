@@ -52,3 +52,4 @@ fabric.properties
 save.p
 quick_notes.spec
 build/
+dist/
